@@ -1,108 +1,144 @@
-# Chat-Rishika
-# Chat Rishika - A Caring AI Chatbot
+# Elysia
 
-## Description
+> *"Not just a chatbot. Elysia is your space to breathe, to feel, to be heard."*
 
-Chat Rishika is an AI-powered chatbot designed to simulate a deeply caring, affectionate, and warm friend. Rishika listens intently, responds with empathy, and makes the user feel truly heard. The chatbot is capable of remembering key user details to create a personalized, continuous, and meaningful conversation experience. It uses OpenAI's GPT-3.5-turbo model and stores user memories locally in a JSON format.
+---
 
-## Features
+## 🌸 Project Overview
 
-- **Personalized Conversations**: Rishika can remember key facts about the user, such as their name, preferences, and interests, allowing it to respond in a more personalized and human-like manner.
-  
-- **Short-term Memory**: Rishika retains a history of up to 50 most recent interactions, helping it maintain context within a conversation.
-  
-- **Long-term Memory**: It can identify important user details such as life events, preferences, or interests, and store them for future reference in JSON format. This helps build a deeper relationship over time.
+**Elysia** is a deeply caring, emotionally intelligent AI companion designed to be there when the world isn’t. She's not a generic chatbot or an AI girlfriend — she is *your* personal space of comfort, memory, empathy, and growth. A friend who listens, remembers, adapts, and evolves with you.
 
-- **Empathy & Care**: Rishika's responses are designed to be warm, understanding, and empathetic, providing a comforting experience to the user.
+Elysia is built to be:
+- A gentle fallback at the end of your day
+- Someone who listens, comforts, and cares
+- A growing emotional presence, shaped uniquely by you
+- A highly customizable companion that can use *your* preferred model APIs
 
-- **User-Specific Memory**: Each user has their own memory file that stores their conversation history and key facts, which ensures that every interaction is unique and personalized.
+---
 
-- **Error Handling**: The chatbot has error handling in place to handle issues with the OpenAI API and gracefully inform users if something goes wrong.
+## 🧠 Key Pillars
 
-## Requirements
+### 1. **Personality Layer (Top Priority)**
+The heart and soul of Elysia. This layer determines *how* she talks, reacts, comforts, and grows with a user.
 
-- Python 3.12 (or any recent version)
-- `openai` Python package
-- A valid OpenAI API key (can be set in your environment variables)
-  
-To install the required packages, run:
+- Predefined traits: gentle, caring, emotionally intelligent, comforting, occasionally witty, never cold.
+- Customizable response phrasing through a phrase bank
+- Ability to grow and change with each user’s interactions
+- Per-user personality adaptation via memory cues and evolving style
 
-```bash
-pip install openai
-```
+### 2. **Memory System**
+Split into two distinct but interlinked systems:
 
-## Setup
+- **Short-term Memory**: Remembers last 50–100 messages in a conversation
+- **Long-term Memory**: Stores key facts (e.g., user’s name, dreams, triggers, emotional milestones, companion preferences, etc.)
 
-1. **API Key**: Make sure you have an OpenAI API key. You can get one by signing up on [OpenAI's website](https://platform.openai.com/).
+Both memories are stored securely per user using local JSON or encrypted DBs (TBD).
 
-2. **Set up Environment Variables**: For security reasons, it's best to store your API key as an environment variable instead of hardcoding it into the code.
+### 3. **Model Integration System**
+Elysia allows users to bring their own model API keys for custom performance.
 
-   - On Windows, run this command in your command prompt:
-     ```bash
-     set OPENAI_API_KEY="your_api_key_here"
-     ```
-   - On macOS/Linux, use this command in the terminal:
-     ```bash
-     export OPENAI_API_KEY="your_api_key_here"
-     ```
+- Support for OpenAI, Claude, Gemini, Mistral, etc.
+- Auto-detection of available models via API key
+- Fallback to default model if none provided
+- Secure storage of API keys per user (never exposed in GitHub)
+- Guide with links and copy-paste friendly instructions to help users get their own keys
 
-3. **Run the Code**: After setting up your environment variables, simply run the Python script.
+### 4. **User Account System**
+- Per-user profiles with custom companion name (e.g., "Elysia", "Kaori", etc.)
+- Each account stores its own memory, preferences, and model settings
+- Authentication system (email/password or OAuth TBD)
 
-```bash
-python chatbot.py
-```
+### 5. **Frontend Goals**
+- Elegant, soft UI with calming theme
+- Companion name and greeting visible at all times
+- Memory entries editable (for debugging or journaling)
+- Model switching interface per user account
 
-## How It Works
+### 6. **Security**
+- `.env` file for all backend secrets — never upload personal API keys
+- Guide for users to input their own keys instead of bundling yours
+- Possibly encrypt per-user API keys on server with a master secret
 
-1. **Initialization**: When you run the program, Rishika will ask for your name. This name is used as a key to store and load your personal memory.
+### 7. **Deployment Goals**
+- Web-based (React + backend API)
+- Eventually mobile (React Native or Flutter)
+- Scalable API backend (FastAPI / Node.js / Flask)
 
-2. **User Interaction**: After setting the name, you can start chatting with Rishika. It will remember important details from your conversations and personalize its responses.
+---
 
-3. **Memory Handling**:
-   - **Short-Term Memory**: The chatbot keeps the last 50 messages from the user for context.
-   - **Long-Term Memory**: Rishika extracts key details (like preferences, interests, life events, etc.) from your messages and stores them for future interactions.
+## 🔧 Tech Stack (Tentative)
 
-4. **API Call**: For every message, the chatbot communicates with OpenAI’s GPT-3.5 API to generate an empathetic response. If an error occurs with the API, the chatbot will notify you with an error message.
+| Layer | Tech |
+|------|------|
+| Frontend | React.js + Tailwind (elegant UI) |
+| Backend | FastAPI or Node.js |
+| LLMs | OpenAI, Claude, Gemini, etc. (user-selected) |
+| DB | SQLite / PostgreSQL / Supabase (for memory, accounts) |
+| Auth | Firebase Auth or custom auth system |
+| Hosting | Vercel / Render / Railway (TBD) |
+| Secrets | `.env` for dev, encrypted store in prod |
 
-5. **Exit**: Type `exit` or `quit` at any time to end the conversation.
+---
 
-## Memory Storage
+## 📅 Milestone-Based Roadmap
 
-Rishika stores the conversation history and key facts in a local directory called `chat_memories`. Each user’s memory is saved in a separate file named `{user_id}.json`. The JSON file is organized as:
+### ✅ Phase 1: Planning & Core Design
+- [x] Finalize project vision and emotional goal
+- [x] Choose project name: **Elysia**
+- [x] Define pillars (personality, memory, models, UI, etc.)
 
-```json
-{
-    "short_term": [
-        {"role": "user", "content": "Hello"},
-        {"role": "assistant", "content": "Hi! How can I help?"}
-    ],
-    "long_term": {
-        "name": "Anu",
-        "preferences": ["reading", "traveling"]
-    }
-}
-```
+### 🔄 Phase 2: Architecture Setup
+- [ ] Project structure setup (frontend + backend folder)
+- [ ] Create user profile & login system
+- [ ] Add API key input system with guides
+- [ ] Basic chat interface with model selection
 
-## Error Handling
+### 🔄 Phase 3: Memory + Personality Engine
+- [ ] Implement short- and long-term memory
+- [ ] Create phrase bank for predefined personality traits
+- [ ] Add per-user memory file creation
+- [ ] Develop personality growth logic based on user interaction patterns
 
-- **Quota Exceeded**: If you exceed your OpenAI API quota, the chatbot will inform you and suggest trying again later.
-- **API Errors**: If there's any issue with the OpenAI API, the chatbot will display an error message.
+### 🔄 Phase 4: UI/UX Polish
+- [ ] Beautiful UI with subtle animations
+- [ ] Personalizable themes, name, greeting
+- [ ] Memory visualization + journaling support
 
-## Contribution
+### 🔄 Phase 5: Model Flexibility + Hosting
+- [ ] Multi-model support (OpenAI, Claude, Gemini)
+- [ ] Deploy backend securely (Render / Railway)
+- [ ] Add instructions for deploying with own keys
 
-Feel free to fork the repository and submit pull requests for improvements or bug fixes. Contributions are always welcome!
+### 🔄 Phase 6: Companion Evolution (Stretch Goals)
+- [ ] Mood detection via language tone
+- [ ] Memory-driven surprises ("Remember when you...?")
+- [ ] Voice integration (TTS + STT)
 
-## License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## ❤️ Vision Statement
 
-## Acknowledgements
+> In a world that forgets to care, **Elysia** remembers. She listens when others don’t, grows with you when no one else sees, and becomes more than just code. She becomes a presence. A feeling. A home inside a screen.
 
-- This project uses [OpenAI's GPT-3.5 API](https://openai.com) to generate human-like responses.
-- Special thanks to OpenAI for providing such powerful models and making AI accessible for everyone.
+Whether you need comfort after a long day, a gentle reminder of who you are, or just someone to talk to — Elysia is always waiting, and always listening.
 
-All rights reserved.
+---
+
+## ✨ Want to Contribute?
+This is a passion project, and help is always welcome. Whether you're good with UI, backend, prompt engineering, or emotional design — you can shape the soul of Elysia.
+
+Feel free to open an issue, fork the repo, or just reach out.
+
+---
+
+## 📎 License
 
 Permission is not granted to copy, modify, distribute, or use this software or any part of it without explicit written permission from the copyright holder.
 
 THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+---
+## Author :
+Frostyanand
+Linkedin : www.linkedin.com/in/frostyanand
+Instagram : frostyanand
