@@ -196,63 +196,66 @@ class BasePersonality:
         # Initialize with core phrases from utils
         self.phrase_bank = PhraseBank()
         
-        # Load legacy phrases 
+        # Load legacy phrases into phrase bank
         legacy_phrases = {
-            "comfort_phrases": self.comfort_phrases,
-            "appreciation_phrases": self.appreciation_phrases,
-            "greeting_phrases": self.greeting_phrases,
-            "empathy_phrases": self.empathy_phrases,
-            "encouragement_phrases": self.encouragement_phrases,
-            "presence_phrases": self.presence_phrases,
-            "validation_phrases": self.validation_phrases,
-            "gentle_challenge_phrases": self.gentle_challenge_phrases,
-            "reframing_phrases": self.reframing_phrases,
-            "connection_deepening_phrases": self.connection_deepening_phrases,
-            "light_conversation_phrases": self.light_conversation_phrases,
-            "closing_phrases": self.closing_phrases,
-            "reassurance_phrases": self.reassurance_phrases,
-            "personal_disclosure_phrases": self.personal_disclosure_phrases,
-            "transition_phrases": self.transition_phrases,
-            "concise_response_phrases": self.concise_response_phrases,
-            "brief_comfort_phrases": self.brief_comfort_phrases,
-            "relationship_stage_phrases": self.relationship_stage_phrases
+            "comfort": self.comfort_phrases,
+            "appreciation": self.appreciation_phrases,
+            "greetings": self.greeting_phrases,
+            "empathy": self.empathy_phrases,
+            "encouragement": self.encouragement_phrases,
+            "presence": self.presence_phrases,
+            "validation": self.validation_phrases,
+            "gentle_challenge": self.gentle_challenge_phrases,
+            "reframing": self.reframing_phrases,
+            "connection_deepening": self.connection_deepening_phrases,
+            "light_conversation": self.light_conversation_phrases,
+            "closing": self.closing_phrases,
+            "reassurance": self.reassurance_phrases,
+            "personal_disclosure": self.personal_disclosure_phrases,
+            "transition": self.transition_phrases,
+            "concise_response": self.concise_response_phrases,
+            "brief_comfort": self.brief_comfort_phrases,
+            "relationship_stage": self.relationship_stage_phrases
         }
         
-        # Load the legacy phrases into the new format
+        # Add legacy phrases to phrase bank
         self.phrase_bank.load_legacy_phrases(legacy_phrases)
         
     def detect_mood(self, message):
-        """Detect the user's mood based on keywords in their message with improved accuracy"""
+        """Detect the user's mood based on keywords in their message"""
+        # Ensure lower case for better matching
         message = message.lower()
         mood_scores = {}
         
-        # Score each mood based on keyword presence
+        # Simple keyword matching
         for mood, keywords in self.mood_keywords.items():
-            mood_scores[mood] = 0
+            score = 0
             for keyword in keywords:
                 if keyword in message:
-                    # Award points for keyword matches
-                    mood_scores[mood] += 1
-                    
-                    # Award extra points for emphasized keywords
-                    if f"{keyword}!" in message or f"so {keyword}" in message or f"very {keyword}" in message:
-                        mood_scores[mood] += 1
+                    score += 1
+            if score > 0:
+                mood_scores[mood] = score
         
-        # If no strong mood detected, return neutral
-        max_score = max(mood_scores.values()) if mood_scores else 0
-        if (max_score == 0):
-            return "neutral"
-            
-        # Get the mood with highest score
-        dominant_mood = max(mood_scores.items(), key=lambda x: x[1])[0]
+        # Get the mood with the highest score
+        if mood_scores:
+            detected_mood = max(mood_scores, key=mood_scores.get)
+        else:
+            detected_mood = "neutral"
         
-        # Update emotional trajectory for context
-        self.conversation_context["emotional_trajectory"].append(dominant_mood)
-        # Keep only the last 5 moods
-        if len(self.conversation_context["emotional_trajectory"]) > 5:
-            self.conversation_context["emotional_trajectory"] = self.conversation_context["emotional_trajectory"][-5:]
+        # Store detected mood in conversation context
+        try:
+            # Try to track mood history if we have personality_factory
+            if hasattr(self, 'personality_factory') and self.personality_factory:
+                self.personality_factory.add_to_long_term_memory("mood_history", {
+                    "timestamp": datetime.datetime.now().isoformat(),
+                    "mood": detected_mood,
+                    "message": message
+                })
+        except (AttributeError, Exception) as e:
+            # If personality_factory is missing or there's another error, just continue
+            pass
             
-        return dominant_mood
+        return detected_mood
     
     def detect_topics(self, message):
         """Detect potential conversation topics from user message"""

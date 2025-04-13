@@ -199,88 +199,87 @@ class PhraseBank:
             primary_categories (list): List of main category names to include
             secondary_categories (list, optional): List of optional categories to maybe include
             max_phrases (int, optional): Maximum number of phrases to include
-            
-        Returns:
-            str: Combined natural response
         """
         if max_phrases is None:
             max_phrases = self.max_phrases_per_response
             
-        # Ensure we don't try to use more categories than our max phrases
-        if len(primary_categories) > max_phrases:
-            primary_categories = random.sample(primary_categories, max_phrases)
+        response_phrases = []
         
-        # Start with primary categories
-        response_parts = []
+        # Add primary category phrases first
         for category in primary_categories:
+            if len(response_phrases) >= max_phrases:
+                break
+                
             phrase = self.get_phrase(category)
-            if phrase:
-                response_parts.append(phrase)
+            if phrase and isinstance(phrase, str) and len(phrase.split()) > 1:
+                response_phrases.append(phrase.strip())
         
-        # Add secondary categories if we have room and with a 50% chance each
-        if secondary_categories and len(response_parts) < max_phrases:
-            remaining_slots = max_phrases - len(response_parts)
-            # Shuffle and limit secondary categories
-            random.shuffle(secondary_categories)
-            for category in secondary_categories[:remaining_slots]:
-                if random.random() < 0.5:  # 50% chance to include
+        # Add secondary category phrases if we have room
+        if secondary_categories and len(response_phrases) < max_phrases:
+            # Randomly select from secondary categories
+            available_secondary = list(secondary_categories)
+            random.shuffle(available_secondary)
+            
+            for category in available_secondary:
+                if len(response_phrases) >= max_phrases:
+                    break
+                    
+                # 50% chance to include each secondary category
+                if random.random() < 0.5:
                     phrase = self.get_phrase(category)
-                    if phrase:
-                        response_parts.append(phrase)
+                    if phrase and isinstance(phrase, str) and len(phrase.split()) > 1:
+                        response_phrases.append(phrase.strip())
         
-        # Combine phrases into a natural response
-        response = " ".join(response_parts)
+        # Clean up phrases and ensure proper punctuation
+        formatted_phrases = []
+        for phrase in response_phrases:
+            # Skip if it's just a category name or too short
+            if not phrase or len(phrase.split()) <= 1:
+                continue
+                
+            # Ensure proper punctuation
+            if not phrase.endswith(('.', '!', '?')):
+                phrase = phrase + '.'
+                
+            formatted_phrases.append(phrase)
         
-        return response
+        # Join phrases with proper spacing
+        if formatted_phrases:
+            return " ".join(formatted_phrases)
+        else:
+            return ""
 
     def load_legacy_phrases(self, phrases):
         """Load phrases from the legacy format into the new structure"""
         try:
             # Handle comfort phrases first since they have a special nested structure
-            if "comfort_phrases" in phrases and phrases["comfort_phrases"]:
+            if "comfort" in phrases and phrases["comfort"]:
                 if "comfort" not in self.categories:
                     self.categories["comfort"] = {}
                     
-                for emotion, phrase_list in phrases["comfort_phrases"].items():
+                for emotion, phrase_list in phrases["comfort"].items():
                     if phrase_list:  # Only process if list is not empty
                         if emotion not in self.categories["comfort"]:
                             self.categories["comfort"][emotion] = []
                         self.categories["comfort"][emotion].extend(phrase_list)
-                    
-            # Map old category names to new ones
-            category_mapping = {
-                "appreciation_phrases": "appreciation",
-                "greeting_phrases": "greetings",
-                "empathy_phrases": "empathy",
-                "encouragement_phrases": "encouragement",
-                "presence_phrases": "presence",
-                "validation_phrases": "validation",
-                "gentle_challenge_phrases": "gentle_challenge",
-                "reframing_phrases": "reframing",
-                "connection_deepening_phrases": "connection_deepening",
-                "light_conversation_phrases": "light_conversation",
-                "closing_phrases": "closing",
-                "reassurance_phrases": "reassurance",
-                "personal_disclosure_phrases": "personal_disclosure",
-                "gentle_humor_phrases": "humor",
-                "transition_phrases": "transitions",
-                "concise_response_phrases": "concise_responses",
-                "brief_comfort_phrases": "brief_comfort",
-                "general_phrases": "general"
-            }
             
-            # Load each category if it exists
-            for old_name, new_name in category_mapping.items():
-                if old_name in phrases and phrases[old_name]:  # Check if exists and not empty
-                    if new_name not in self.categories:
-                        self.categories[new_name] = []
-                    self.categories[new_name].extend(phrases[old_name])
+            # Process other categories directly 
+            for category, phrase_list in phrases.items():
+                # Skip comfort since we've already handled it specially
+                if category == "comfort" or category == "relationship_stage":
+                    continue
+                    
+                if phrase_list:  # Only process if list is not empty
+                    if category not in self.categories:
+                        self.categories[category] = []
+                    self.categories[category].extend(phrase_list)
 
             # Handle relationship stage phrases separately since they're nested
-            if "relationship_stage_phrases" in phrases and phrases["relationship_stage_phrases"]:
+            if "relationship_stage" in phrases and phrases["relationship_stage"]:
                 if "relationship_stages" not in self.categories:
                     self.categories["relationship_stages"] = {}
-                self.categories["relationship_stages"].update(phrases["relationship_stage_phrases"])
+                self.categories["relationship_stages"].update(phrases["relationship_stage"])
+                
         except Exception as e:
             print(f"Error loading legacy phrases: {e}")
             # Continue with default phrases even if there's an error

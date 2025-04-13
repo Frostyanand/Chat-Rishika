@@ -21,6 +21,9 @@ class PersonalityResponseFactory:
             os.makedirs(self.user_data_path)
         
         self.personalities = {}  # Cache of created personalities
+        
+        # Create stub for personality_adaptation (will be set properly later)
+        self.personality_adaptation = None
     
     def get_personality(self, user_id, refresh=False):
         """Get a personality for a specific user, optionally refresh from storage"""
@@ -33,6 +36,9 @@ class PersonalityResponseFactory:
         # Create a base personality with the user's preferred name
         personality_name = user_data.get("companion_name", "Elysia")
         personality = BasePersonality(name=personality_name)
+        
+        # Set personality_factory reference to self
+        personality.personality_factory = self
         
         # Apply user preferences to personality traits if available
         if "personality_traits" in user_data:
@@ -169,6 +175,10 @@ class PersonalityResponseFactory:
         # Get the personality
         personality = self.get_personality(user_id)
         
+        # Ensure personality_factory is set
+        if not hasattr(personality, 'personality_factory') or not personality.personality_factory:
+            personality.personality_factory = self
+        
         # Add message to short-term memory
         self.add_to_short_term_memory(user_id, message, is_user=True)
         
@@ -178,28 +188,34 @@ class PersonalityResponseFactory:
             user_data["user_id"] = user_id
             user_data["relationship_stage"] = relationship_stage
         
-        # Check for emotional distress including loneliness
-        user_mood = personality.detect_mood(message)
-        if user_mood in ["depressed", "sad", "anxious", "overwhelmed", "lonely"]:
-            # Get appropriate comfort phrase
-            comfort_response = personality.phrase_bank.get_comfort_phrase(user_mood)
+        try:
+            # Check for emotional distress including loneliness
+            user_mood = personality.detect_mood(message)
+            if user_mood in ["depressed", "sad", "anxious", "overwhelmed", "lonely"]:
+                # Get appropriate comfort phrase
+                comfort_response = personality.phrase_bank.get_comfort_phrase(user_mood)
+                
+                # Add empathetic follow-up
+                if random.random() < 0.7:  # 70% chance
+                    follow_up = personality.phrase_bank.get_phrase("empathy")
+                    comfort_response = f"{comfort_response} {follow_up}"
+                
+                # Add validation for emotional support
+                if random.random() < 0.5:  # 50% chance
+                    validation = personality.phrase_bank.get_phrase("validation")
+                    comfort_response = f"{comfort_response} {validation}"
+                
+                response = comfort_response
+            else:
+                # Generate normal response using the personality
+                response = personality.generate_response(message, user_data)
             
-            # Add empathetic follow-up
-            if random.random() < 0.7:  # 70% chance
-                follow_up = personality.phrase_bank.get_phrase("empathy")
-                comfort_response = f"{comfort_response} {follow_up}"
+            return response
             
-            # Add validation for emotional support
-            if random.random() < 0.5:  # 50% chance
-                validation = personality.phrase_bank.get_phrase("validation")
-                comfort_response = f"{comfort_response} {validation}"
-            
-            response = comfort_response
-        else:
-            # Generate normal response using the personality
-            response = personality.generate_response(message, user_data)
-            
-        return response
+        except Exception as e:
+            # Fallback response if an error occurs
+            print(f"Error generating response: {e}")
+            return "I'm here to chat with you. How can I help you today?"
     
     # Memory system methods
     def add_user_interest(self, user_id, interest):

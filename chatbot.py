@@ -14,8 +14,11 @@ from datetime import datetime
 from colorama import Fore, Style, init
 init()  # Initialize colorama
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging - only show WARNING and above to keep conversations natural
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 # Import our personality layer

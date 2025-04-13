@@ -25,6 +25,10 @@ class ElysiaPersonalitySystem:
         # Initialize components
         self.factory = PersonalityResponseFactory()
         self.adaptation = PersonalityAdaptation(self.factory)
+        
+        # Set the personality_adaptation attribute of the factory to avoid circular dependency
+        self.factory.personality_adaptation = self.adaptation
+        
         self.evolution = PersonalityEvolution()
         self.conversation_tracker = ConversationTracker()
         self.emotion_analyzer = EmotionAnalyzer()
@@ -109,7 +113,23 @@ class ElysiaPersonalitySystem:
                     response_components.append(follow_up)
             
             # Combine components into final response
-            full_response = " ".join(component for component in response_components if component)
+            response_components = [component.strip() for component in response_components if component and component.strip()]
+            
+            # Clean up response components to ensure proper spacing and punctuation
+            formatted_components = []
+            for component in response_components:
+                # Skip empty components or components that might just be category labels
+                if not component or len(component.split()) <= 1:
+                    continue
+                    
+                # Make sure each component ends with proper punctuation
+                if not component.endswith(('.', '!', '?')):
+                    component = component + '.'
+                
+                formatted_components.append(component)
+            
+            # Join with proper spacing
+            full_response = " ".join(formatted_components)
             
             # If we somehow don't have a response, use a default one
             if not full_response:
