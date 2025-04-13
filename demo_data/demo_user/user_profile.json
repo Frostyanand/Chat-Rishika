@@ -1,0 +1,8 @@
+{
+  "name": "Demo User",
+  "preferences": {
+    "theme": "light"
+  },
+  "bio": "A demo user for testing",
+  "timezone": "UTC-5"
+}

@@ -1,0 +1,32 @@
+{
+  "messages": [
+    {
+      "content": "Hello Elysia!",
+      "timestamp": "2025-04-13T14:54:03.136544",
+      "is_user": true,
+      "metadata": {},
+      "word_count": 2
+    },
+    {
+      "content": "Hello Demo User! How can I help you today?",
+      "timestamp": "2025-04-13T14:54:03.157544",
+      "is_user": false,
+      "metadata": {},
+      "word_count": 9
+    },
+    {
+      "content": "I'm interested in AI and programming.",
+      "timestamp": "2025-04-13T14:54:03.172548",
+      "is_user": true,
+      "metadata": {},
+      "word_count": 6
+    },
+    {
+      "content": "That's great! I can help you with AI and programming topics.",
+      "timestamp": "2025-04-13T14:54:03.190045",
+      "is_user": false,
+      "metadata": {},
+      "word_count": 11
+    }
+  ]
+}
