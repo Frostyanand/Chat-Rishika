@@ -48,7 +48,7 @@ demo_data/
 .coverage
 htmlcov/
 .pytest_cache/
-
+tests/
 # NLTK and spaCy data (will be in Misc folder)
 nltk_data/
 spacy_models/
@@ -56,3 +56,4 @@ spacy_models/
 # Custom files
 activate_venv.bat
 activate_venv.sh 
+local_config.py
